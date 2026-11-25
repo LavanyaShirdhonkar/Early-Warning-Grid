@@ -1,41 +1,46 @@
 # Autonomous Landslide & Flash-Flood Early Warning Grid (ALF-EWG)
 
-A C++17 console simulation for the CIC-211 Object-Oriented Programming assignment. It models telemetry stations, computes an illustrative hazard index, classifies alerts, simulates regional siren dispatch, sorts region priorities, and stores incident records in a binary file.
+**CIC-211 OOP assignment | C++17**
 
-> **Safety and accuracy:** Educational simulation only. It uses fixed sample readings and illustrative formulas. It is not connected to real sensors, sirens, emergency services, or validated disaster prediction models. Do not use it for real safety decisions.
+Console simulation of fictional telemetry stations, an illustrative hazard score, simulated alert classification, region prioritization, and binary incident logging.
 
-## Features
-- Encapsulated sensor stations with validation
-- Overloaded and inline hazard-index functions
-- Namespaces `DisasterCore::Sensors` and `DisasterCore::Alerts`
-- Friend auditor to inspect private telemetry
-- Dynamic telemetry buffer with deep copy, copy assignment, and destructor
-- Static active-station counter and network alert level
-- Operator overloads: `+`, `>`, `<<`, `>>`
-- Abstract sensor node, virtual inheritance diamond, and runtime polymorphism
-- Containership using `PowerSubsystem`
-- Custom exception types
-- Binary incident logging and STL containers/algorithms
-- Custom comparator functor and stream manipulator
+> **Safety/accuracy:** Academic simulation only. Sample data and score formula are invented. No sensors, sirens, emergency services, or real prediction model are connected. Never use for real safety decisions.
 
-## Build and run
-### Windows (MinGW g++)
+## OOP features demonstrated
+- Encapsulation and validation; inline/overloaded functions; namespaces
+- Friend auditor; dynamic array/deep copy/assignment/destructor
+- Static station counter/network alert level
+- Operators `+`, `>`, `<<`, `>>`
+- Abstract base, runtime polymorphism, virtual and hybrid inheritance
+- Composition (`PowerSubsystem`), exceptions and try/catch
+- Binary persistence (`incidents.bin`)
+- STL vector/map/sort/functor and custom template `PriorityQueue<T, Compare>`
+- Startup self-checks (formula, cap, invalid input, exception catch, template ordering)
+
+## Build
+CMake:
 ```bash
-g++ -std=c++17 -Wall -Wextra -pedantic src/main.cpp -o early_warning_grid.exe
-early_warning_grid.exe
+cmake -S . -B build
+cmake --build build
 ```
-### Linux/macOS
+Run: Windows `build\\early_warning_grid.exe`; Linux/macOS `./build/early_warning_grid`.
+
+Direct g++:
 ```bash
 g++ -std=c++17 -Wall -Wextra -pedantic src/main.cpp -o early_warning_grid
-./early_warning_grid
 ```
-The program appends incident records to `incidents.bin` in the current working directory. Remove that file to reset the demo log.
+The program appends records to `incidents.bin`; delete it to reset the count.
 
-## Repository layout
+## Structure
 ```
 Early-Warning-Grid/
+├── .github/workflows/build.yml
+├── .gitignore
+├── CMakeLists.txt
 ├── README.md
-├── src/main.cpp
-└── docs/TECHNICAL_REPORT.md
+├── docs/TECHNICAL_REPORT.md
+└── src/main.cpp
 ```
-See [Technical Report](docs/TECHNICAL_REPORT.md) for architecture, workflow, and mapping to CIC-211 Units I–IV.
+GitHub Actions builds and runs the self-checks on pushes and pull requests. Review the Actions tab for run results. The self-checks are not a full test suite.
+
+See [Technical Report](docs/TECHNICAL_REPORT.md) for design, syllabus mapping, test plan, limitations, and future work.
