@@ -1,0 +1,9 @@
+/build/
+/cmake-build-*/
+/early_warning_grid
+/early_warning_grid.exe
+/incidents.bin
+.vscode/
+.idea/
+*.user
+*.suo
