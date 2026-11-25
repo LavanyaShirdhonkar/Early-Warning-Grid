@@ -1,99 +1,76 @@
 # Technical Report — ALF-EWG
 
-## 1. Project Overview
-The Autonomous Landslide & Flash-Flood Early Warning Grid (ALF-EWG) is a console-based C++ simulation of a regional hazard-monitoring system. It represents sensor stations, telemetry processing, hazard scoring, alert classification, simulated siren dispatch, region prioritization, and persistent incident logging.
+**Course:** CIC-211 Object-Oriented Programming | **Language:** C++17 | **Type:** Console simulation
 
-## 2. Problem Statement
-Mountain regions can experience landslides and flash floods after combinations of heavy rainfall, soil saturation, slope instability, and rising river levels. Monitoring multiple indicators and maintaining incident records can help demonstrate how a software alert pipeline might support preparedness. This project implements a simplified educational model using simulated readings.
+## 1. Abstract
+ALF-EWG simulates environmental telemetry processing. Fictional stations receive sample values, calculate a demonstration score, print an alert classification and siren simulation, prioritize regions, and append incident records.
 
-## 3. Objectives
-- Represent telemetry stations with encapsulated state.
-- Compute a composite hazard index from simulated environmental measurements.
-- Assign alert levels and demonstrate alert dispatch.
-- Apply CIC-211 concepts across Units I–IV.
-- Persist incident records and sort regional priorities.
+## 2. Problem and Objectives
+The project illustrates how software could represent rainfall, soil saturation, and river-level readings for a classroom monitoring workflow. Objectives: encapsulate stations, demonstrate overloaded score functions, validate sample values, classify alerts, apply OOP concepts from Units I–IV, sort regional summaries, and save records.
 
-## 4. Scope and Assumptions
-This prototype is a deterministic classroom simulation. It does not ingest real sensor data, connect to a network, control sirens, or provide validated hazard predictions. Its formula and thresholds are illustrative and must not be used for operational safety decisions. Real deployment would require domain experts, validated datasets, calibration, reliability engineering, official alert protocols, and redundant communications.
+## 3. Scope disclaimer
+Readings, formula, and thresholds are invented for programming demonstration. The project is not connected to hardware, sirens, emergency services, or validated forecasting. It must not be used for real-world safety decisions. Operational systems require experts, validated data/models, calibration, official protocols, redundancy, field tests, and safety review.
 
-## 5. System Workflow
-1. Create simulated sensor stations.
-2. A polymorphic sensor node performs a simulated telemetry sweep.
-3. Measurements are validated and a composite hazard score is computed.
-4. A score is mapped to a demonstration alert level.
-5. The alert object prints a siren-dispatch simulation.
-6. The auditor prints private telemetry for academic demonstration.
-7. A binary incident record is appended to disk.
-8. Region records are sorted using a custom priority functor.
-9. Previously logged records are counted and displayed.
+## 4. Workflow
+1. Create three fictional stations.
+2. A polymorphic probe provides deterministic sample readings.
+3. Validate station updates and compute score.
+4. Map score to Normal, Watch, Warning, or simulated Evacuation Alert.
+5. Print siren simulation; friend auditor displays sample values.
+6. Append incident record to `incidents.bin`.
+7. Sort regional summaries with the custom template queue.
+8. Load stored records and display count.
 
-## 6. Hazard Scoring
-The code contains overloaded `computeHazardIndex()` functions for rainfall+slope, a typed soil-saturation+vibration telemetry structure, and rainfall+river-level+saturation. The demonstration uses the third overload. This hand-designed example formula is not a scientific model. Demo alert mapping:
-- 0–29: Normal
-- 30–49: Watch
-- 50–69: Warning
-- 70–100: Evacuation Alert (simulated)
+## 5. Score formula
+Main demo overload uses: `score = min(100, 0.30 × rainfall + 12 × riverLevel + 0.40 × soilSaturation)`. Weights are arbitrary, not scientific.
 
-## 7. Architecture and OOP Design
-- **SensorStation:** encapsulates ID, region, coordinate, readings, and score.
-- **TelemetryBuffer:** owns dynamically allocated values; deep-copy constructor, assignment, and destructor manage memory.
-- **TelemetryAuditor:** friend class demonstrating controlled access to private raw telemetry.
-- **DisasterTelemetryDevice:** virtual root interface.
-- **SolarPoweredNode / WirelessLoRaTransceiver:** virtual intermediate inheritance branches.
-- **AutonomousHybridProbe:** derived hybrid node; implements telemetry reading.
-- **PowerSubsystem:** composed object owned by the sensor node.
-- **EarlyWarningSiren:** encapsulates alert level; static network-wide maximum alert.
-- **RegionCluster:** overloads `+` to combine cluster statistics and `>` for comparisons.
+Illustrative categories: 0–29 Normal; 30–49 Watch; 50–69 Warning; 70–100 Evacuation Alert (simulation only).
 
-## 8. CIC-211 Syllabus Mapping
+## 6. OOP Architecture
+- **SensorStation:** encapsulated ID, region, coordinates, readings and score; validates finite/non-negative values and soil range.
+- **TelemetryBuffer:** dynamically allocated array, deep-copy constructor, copy assignment, bounds checks and destructor.
+- **TelemetryAuditor:** friend class for demonstration access to private values.
+- **DisasterTelemetryDevice:** abstract interface.
+- **SolarPoweredNode / WirelessLoRaTransceiver:** virtual inheritance branches.
+- **AutonomousHybridProbe:** hybrid derived class, implements virtual methods.
+- **PowerSubsystem:** composed member.
+- **EarlyWarningSiren:** alert-level class and static network maximum.
+- **RegionCluster:** operator+ and operator>.
+- **PriorityQueue<T, Compare>:** beginner-friendly user-defined template sorting items by a comparator.
 
-### Unit I — Foundations and Call Semantics
-- Namespaces: `DisasterCore::Sensors` and `DisasterCore::Alerts`.
-- Inline hazard-index calculation functions.
-- Function overloading for different telemetry parameter combinations.
-- Coordinate normalization returns a reference; station update modifies state.
-- Friend class `TelemetryAuditor` accesses private sensor fields.
+## 7. CIC-211 Mapping
+**Unit I:** namespaces, inline functions, function overloading, reference-returning normalization, friend class.  
+**Unit II:** encapsulation/accessors, static members, dynamic memory/deep copy, constructor/assignment/destructor, operator overloads.  
+**Unit III:** abstract class, pure virtual methods, virtual inheritance, hybrid inheritance, runtime polymorphism, composition.  
+**Unit IV:** exception classes/try-catch, binary file I/O, vector/map/sort, functor, template class, custom stream manipulator.
 
-### Unit II — Encapsulation, Dynamic Memory, Operator Overloading
-- Encapsulation and const-correct accessors in `SensorStation`.
-- Static station count and global alert level.
-- Dynamic array in `TelemetryBuffer`; parameterized constructor, deep-copy constructor, copy assignment, destructor.
-- `RegionCluster::operator+`, `operator>`, and `SensorStation` stream operators.
+## 8. Data Structures and Files
+- `vector<SensorStation>`: station records
+- `vector<BaseSensorNode*>`: polymorphic node references
+- `map<string, RegionCluster>`: region summaries
+- `PriorityQueue<RegionCluster, EvacuationPriority>`: sorted regions
+- `vector<IncidentRecord>`: loaded records
+- `incidents.bin`: append-only binary log
 
-### Unit III — Inheritance, Containership, Polymorphism
-- Abstract `BaseSensorNode` declares pure virtual `readTelemetry()` and `evaluateThreshold()`.
-- Virtual inheritance resolves the diamond through `DisasterTelemetryDevice`.
-- `PowerSubsystem` is composed within the base node.
-- A `std::vector<BaseSensorNode*>` dispatches methods at runtime.
+The binary struct format is a simple same-build classroom demonstration, not portable/versioned archival storage.
 
-### Unit IV — Streams, Persistence, Exceptions, STL
-- Custom exceptions: sensor failure, checksum mismatch, threshold overflow.
-- Binary `fstream` persistence for incident records.
-- STL `vector`, `map`, `sort`, and custom comparator/functor.
-- Custom stream manipulator `alertTable()` prints table headings.
+## 9. Verification
+Startup self-checks test score cap, formula arithmetic, rejection of negative rainfall, catching the checksum exception type, and template queue ordering. **The checksum exception test only demonstrates catching that exception; no checksum algorithm is implemented.** GitHub Actions is configured to compile and run the program. This report does not claim CI has passed until a successful run is visible in Actions.
 
-## 9. Data Structures and File Storage
-- `vector<SensorStation>`: station collection.
-- `vector<BaseSensorNode*>`: polymorphic nodes.
-- `map<string, RegionCluster>`: regional aggregation.
-- `vector<IncidentRecord>`: loaded incident records.
-- `incidents.bin`: append-only binary incident history in the working directory.
+Manual checks: run twice to confirm stored count increases; delete `incidents.bin` to reset; inspect CI logs and output.
 
-## 10. Build and Test Procedure
-Compile using a C++17 compiler:
+## 10. Build
+```bash
+cmake -S . -B build
+cmake --build build
+```
+Or:
 ```bash
 g++ -std=c++17 -Wall -Wextra -pedantic src/main.cpp -o early_warning_grid
-./early_warning_grid
 ```
-Expected demonstration: simulated alert output, audit readings, station table, sorted region priority, active station count, and persisted record count. Run it twice to verify that the stored count increases. Delete `incidents.bin` to reset.
 
-## 11. Limitations and Future Enhancements
-- Replace fixed readings with validated sensor inputs or a clearly labeled dataset.
-- Use a scientifically validated model and calibrated thresholds.
-- Add checksum validation and safer transactional file replacement.
-- Add unit tests, telemetry timestamps, sensor-health monitoring, and structured logging.
-- Add a graphical dashboard/map as a separate extension.
-- Establish secure communication, redundancy, fail-safe procedures, and expert review before any real deployment.
+## 11. Limitations and Future Work
+Fixed sample data; unvalidated formula/thresholds; checksum exception without checksum implementation; simple unversioned binary persistence; basic queue prioritizes clarity over performance. Future improvements: separate unit tests, timestamped inputs, file format versioning, user-input mode, and dashboard. Any real use would need extensive domain, engineering, and safety validation.
 
 ## 12. Conclusion
-ALF-EWG demonstrates a modular OOP simulation of telemetry monitoring and alert classification while mapping major CIC-211 mechanisms to concrete code. It is intended for learning, presentation, and code review—not real disaster warning.
+ALF-EWG demonstrates C++ OOP and STL concepts through a simple simulated monitoring workflow. It is intended for academic demonstration only.
