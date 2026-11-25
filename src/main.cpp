@@ -168,7 +168,8 @@ int main(){
     using namespace DisasterCore::Sensors; using namespace DisasterCore::Alerts;
     std::vector<SensorStation> stations;
     stations.emplace_back("ST-01","North Ridge",GeoCoordinate{30.1,78.2});
-    stations.emplace_back("ST-02","River Valley",GeoCoordinate{30.3,78.5});\n    stations.emplace_back("ST-03","South Slope",GeoCoordinate{30.5,78.7});
+    stations.emplace_back("ST-02","River Valley",GeoCoordinate{30.3,78.5});
+    stations.emplace_back("ST-03","South Slope",GeoCoordinate{30.5,78.7});
     std::vector<BaseSensorNode*> nodes; AutonomousHybridProbe probe; nodes.push_back(&probe);
     std::map<std::string,RegionCluster> zones;
     std::cout<<"\n=== AUTONOMOUS LANDSLIDE & FLASH-FLOOD EARLY WARNING GRID ===\n";
